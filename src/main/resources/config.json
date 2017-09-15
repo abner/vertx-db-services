@@ -1,0 +1,9 @@
+{
+  "db_host": "localhost",
+  "db_name": "example",
+  "db_user": "postgres",
+  "db_password": "postgres",
+  "db_port": 5432,
+  "url": "jdbc:hsqldb:mem:db?shutdown=true",
+  "_driverclass": "org.hsqldb.jdbcDriver"
+}
