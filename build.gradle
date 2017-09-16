@@ -15,6 +15,7 @@ sourceCompatibility = '1.8'
 mainClassName = 'io.vertx.core.Launcher'
 
 def vertxVersion = '3.4.2'
+def postgresJdbcVersion = '42.1.4'
 def mainVerticleName = 'io.abner.vertx.postgres.verticles.MainVerticle'
 def watchForChange = 'src/**/*'
 def doOnChange = './gradlew classes'
@@ -28,9 +29,10 @@ dependencies {
     compile "io.vertx:vertx-web:$vertxVersion"
     compile "io.vertx:vertx-rx-java:$vertxVersion"
     compile "io.vertx:vertx-jdbc-client:$vertxVersion"
-    compile "org.hsqldb:hsqldb:2.3.3"
-
-
+    // compile "org.hsqldb:hsqldb:2.3.3"
+    compile "org.postgresql:postgresql:$postgresJdbcVersion"
+    // https://mvnrepository.com/artifact/com.googlecode.log4jdbc/log4jdbc
+    compile group: 'com.googlecode.log4jdbc', name: 'log4jdbc', version: '1.2'
 
 
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
@@ -55,3 +57,9 @@ run {
             "--on-redeploy=$doOnChange"
     ]
 }
+
+task copyTestResources(type: Copy) {
+    from "${projectDir}/src/test/resources"
+    into "${buildDir}/classes/test"
+}
+processTestResources.dependsOn copyTestResources

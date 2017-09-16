@@ -19,10 +19,14 @@ public abstract class DatabaseOperationHandler<T> {
 
     public Single<DatabaseOperationHandler> init() {
         this.sqlClient.getConnection(connectionHandler);
-        return this.connectionHandler.whenReady().map(conn -> {
-            this.connection = conn;
-            return this;
-        });
+        return this.connectionHandler.whenReady()
+                /*.doOnUnsubscribe(() -> {
+                    this.connection.rxClose().subscribe();
+                })*/
+                .map(conn -> {
+                    this.connection = conn;
+                    return this;
+                });
     }
 
 
@@ -35,7 +39,9 @@ public abstract class DatabaseOperationHandler<T> {
     }
 
     protected abstract void doOnNext(T r);
+
     protected abstract void doOnError(Throwable e);
+
     protected abstract Object mapResult(ResultSet rs);
 
     protected abstract String getSql();

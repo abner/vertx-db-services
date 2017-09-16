@@ -25,6 +25,7 @@ public class SetupDbConnectionHandler implements Handler<AsyncResult<SQLConnecti
         handleHasOccurred = true;
         if (event.succeeded()) {
             this.connection = event.result();
+
             this.whenReadyEmitter.onSuccess(this.connection);
         } else {
             this.whenReadyEmitter.onError(event.cause());

@@ -27,7 +27,7 @@ public class SomeDatabaseOperationHandler extends DatabaseOperationHandler<Integ
 
     @Override
     protected String getSql() {
-        return "SELECT 1 FROM INFORMATION_SCHEMA.SYSTEM_USERS";
+        return "select 1";
     }
 
 
