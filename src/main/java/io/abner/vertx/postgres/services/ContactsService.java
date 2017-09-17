@@ -18,4 +18,9 @@ public class ContactsService extends PersistenceService<Contact> {
     public ContactsService(SQLConnection conn) {
         super(conn);
     }
+    
+    public ContactsService(SQLConnection conn, Boolean autoCommit) {
+        super(conn, autoCommit);
+    }
+    
 }

@@ -22,8 +22,8 @@ public class ContactsServiceTest extends AbstractVertxTest {
                             context.assertEquals(4, rs.size());
                             context.assertEquals("John Doe", rs.get(0).getName());
                             async.complete();
-                        })
-                );
+                        }).doOnError(context::fail)
+                , context::fail);
 
     }
 }

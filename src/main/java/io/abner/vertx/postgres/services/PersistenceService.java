@@ -9,6 +9,7 @@ import io.vertx.ext.sql.UpdateResult;
 import io.vertx.rxjava.ext.sql.SQLConnection;
 import rx.Single;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,8 +26,9 @@ public abstract class PersistenceService<T> {
         this(conn, true);
     }
 
-    public PersistenceService(SQLConnection conn, boolean autoCommit) {
+    public PersistenceService(SQLConnection conn, Boolean autoCommit) {
         this.conn = conn;
+        this.autoCommit = autoCommit.booleanValue();
     }
 
     public Single<List<JsonObject> > queryAndGetAllRowsAndColumns(String sql) {
@@ -38,6 +40,7 @@ public abstract class PersistenceService<T> {
     }
 
     public Single<List<T>> getAll() {
+    	System.out.println("AUTOCOMMIT - > " + this.autoCommit);
         return this.query("Select * from " + this.getTableName()).map(resultSet -> {
            return resultSet.getRows().stream().map(obj -> {
                return obj.mapTo(this.getModelType());
