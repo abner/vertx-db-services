@@ -2,6 +2,7 @@ plugins {
     id 'idea'
     id 'application'
     id 'com.github.johnrengelman.shadow' version '1.2.3'
+    id "org.flywaydb.flyway" version "4.2.0"
 }
 
 group 'io.abner.vertx'
@@ -21,8 +22,6 @@ def watchForChange = 'src/**/*'
 def doOnChange = './gradlew classes'
 
 
-
-
 dependencies {
     compile "io.vertx:vertx-core:$vertxVersion"
     compile "io.vertx:vertx-hazelcast:$vertxVersion"
@@ -31,8 +30,6 @@ dependencies {
     compile "io.vertx:vertx-jdbc-client:$vertxVersion"
     // compile "org.hsqldb:hsqldb:2.3.3"
     compile "org.postgresql:postgresql:$postgresJdbcVersion"
-    // https://mvnrepository.com/artifact/com.googlecode.log4jdbc/log4jdbc
-    compile group: 'com.googlecode.log4jdbc', name: 'log4jdbc', version: '1.2'
 
 
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
@@ -48,14 +45,25 @@ shadowJar {
     mergeServiceFiles { include 'META-INF/services/io.vertx.core.spi.VerticleFactory' }
 }
 
+def jsonConfigFile = file('src/main/resources/config.json')
+def jsonConfig = new groovy.json.JsonSlurper().parseText(jsonConfigFile.text)
+
+
 run {
     args = [
             'run',
             mainVerticleName,
             "--redeploy=$watchForChange",
             "--launcher-class=$mainClassName",
-            "--on-redeploy=$doOnChange"
+                "--on-redeploy=$doOnChange",
+            "-conf ${buildDir}/resources/main/config.json"
     ]
+}
+
+flyway {
+    url = System.getenv("CONTACTS_DB_URL") ?: jsonConfig.contacts_jdbc_url
+    schemas = [ 'public'  ]
+    table = 'schema_history'
 }
 
 task copyTestResources(type: Copy) {
@@ -63,3 +71,7 @@ task copyTestResources(type: Copy) {
     into "${buildDir}/classes/test"
 }
 processTestResources.dependsOn copyTestResources
+
+task dbUrl() {
+    println(System.getenv("CONTACTS_DB_URL") ?: jsonConfig.contacts_jdbc_url)
+}

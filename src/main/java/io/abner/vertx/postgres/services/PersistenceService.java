@@ -1,5 +1,7 @@
 package io.abner.vertx.postgres.services;
 
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.UUIDGenerator;
+import io.abner.vertx.postgres.services.interfaces.ExecuteDatabaseOperation;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.sql.ResultSet;
@@ -17,6 +19,7 @@ public abstract class PersistenceService<T> {
 
     private SQLConnection conn;
     private boolean autoCommit = true;
+    protected UUIDGenerator uuidGenerator = new UUIDGenerator();
 
     public PersistenceService(SQLConnection conn) {
         this(conn, true);
@@ -87,4 +90,9 @@ public abstract class PersistenceService<T> {
                 ? Single.error(new Exception("AutoCommit is on. Cannot rollback operations!"))
                 : this.conn.rxRollback().flatMap((Void) -> this.conn.rxClose());
     }
+
+    protected String getUUIDFor(Object obj) {
+        return this.uuidGenerator.generateId(obj).toString();
+    }
+
 }

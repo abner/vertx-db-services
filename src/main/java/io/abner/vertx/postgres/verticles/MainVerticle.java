@@ -22,36 +22,22 @@ public class MainVerticle extends AbstractVerticle {
     @Override
     public void start() throws Exception {
 
+        System.out.println("CONFIG => " + this.config().encodePrettily());
+
         /*JsonObject config = new JsonObject().put("url", "jdbc:hsqldb:mem:test?shutdown=true")
                 .put("driver_class", "org.hsqldb.jdbcDriver");
         */
+        System.out.println("Application just started...\nIt's so cool! :D ----------------------------------------------------");
 
         JsonObject config = new JsonObject()
                 .put("initial_pool_size", 1)
                 .put("min_pool_size", 1)
                 .put("max_pool_size", 1)
                 .put("max_idle_time", 10)
-                .put("url", "jdbc:postgresql://localhost:5432/postgres?user=postgres&loggerLevel=TRACE"); //
+                //.put("url", "jdbc:postgresql://localhost:5432/postgres?user=postgres&loggerLevel=TRACE");
+                .put("url", this.config().getValue("contacts_jdbc_url"));
         JDBCClient jdbc = JDBCClient.createShared(vertx, config);
-/*
-        // Connect to the database
-        jdbc.rxGetConnection().flatMap(conn -> {
 
-            // Now chain some statements using flatmap composition
-            Single<ResultSet> resa = conn.rxUpdate("CREATE TABLE test(col VARCHAR(20))")
-                    .flatMap(result -> conn.rxUpdate("INSERT INTO test (col) VALUES ('val1')"))
-                    // .flatMap(result -> conn.rxUpdate("INSERT INTO test (col) VALUES ('val2')"))
-                    .flatMap(result -> conn.rxQuery("SELECT * FROM test"));
-
-            return resa.doAfterTerminate(conn::close);
-
-        }).subscribe(resultSet -> {
-            // Subscribe to the final result
-            System.out.println("Results : " + resultSet.getRows());
-        }, err -> {
-            System.out.println("Database problem");
-            err.printStackTrace();
-        });*/
 
         jdbc.rxGetConnection().subscribe(conn -> {
             conn.rxQuery("SELECT sum(numbackends) FROM pg_stat_database;")
