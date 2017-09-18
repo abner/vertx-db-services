@@ -47,8 +47,7 @@ public abstract class PersistenceService<T> {
            }).collect(Collectors.toList());
         });
     }
-
-
+    
     protected Single<ResultSet> query(String sql) {
         return this.conn.rxQuery(sql);
     }
