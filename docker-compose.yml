@@ -1,0 +1,14 @@
+version: '2'
+services:
+  vertx-app:
+    build: ./
+    environment:
+      - "IN_DOCKER=1"
+    ports:
+      - "8080:8080"
+    depends_on: 
+      - 'postgresql'
+  postgresql:
+    image: 'postgres:9.6.5-alpine'
+    ports:
+      - 5432:5432

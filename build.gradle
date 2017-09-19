@@ -2,7 +2,7 @@ plugins {
     id 'idea'
     id 'application'
     id 'com.github.johnrengelman.shadow' version '1.2.3'
-    id "org.flywaydb.flyway" version "4.2.0"
+    id "org.flywaydb.flyway" version '4.2.0'
 }
 
 group 'io.abner.vertx'
@@ -17,7 +17,7 @@ mainClassName = 'io.vertx.core.Launcher'
 
 def vertxVersion = '3.4.2'
 def postgresJdbcVersion = '42.1.4'
-def mainVerticleName = 'io.abner.vertx.postgres.verticles.MainVerticle'
+def mainVerticleName = 'io.abner.vertx.postgres.verticles.WebAppVerticle'
 def watchForChange = 'src/**/*'
 def doOnChange = './gradlew classes'
 
@@ -30,7 +30,7 @@ dependencies {
     compile "io.vertx:vertx-jdbc-client:$vertxVersion"
     // compile "org.hsqldb:hsqldb:2.3.3"
     compile "org.postgresql:postgresql:$postgresJdbcVersion"
-
+	compile "org.flywaydb:flyway-core:4.2.0"
 
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
     compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.25'
@@ -71,6 +71,7 @@ task copyTestResources(type: Copy) {
     into "${buildDir}/classes/test"
 }
 processTestResources.dependsOn copyTestResources
+
 
 task dbUrl() {
     println(System.getenv("CONTACTS_DB_URL") ?: jsonConfig.contacts_jdbc_url)
