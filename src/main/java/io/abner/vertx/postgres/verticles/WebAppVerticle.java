@@ -1,7 +1,5 @@
 package io.abner.vertx.postgres.verticles;
 
-import java.awt.FlowLayout;
-
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +58,8 @@ public class WebAppVerticle extends AbstractVerticle {
 			try {
 				Flyway flyway = new Flyway();
 				flyway.setDataSource(this.config().getString("contacts_jdbc_url"), "postgres", "");
-				flyway.migrate();;
+				flyway.baseline();
+				flyway.migrate();
 				f.complete();
 			} catch(Exception e) {
 				e.printStackTrace();
@@ -73,6 +72,6 @@ public class WebAppVerticle extends AbstractVerticle {
 		router.put("/contacts/:id").handler(contactsHandler);
 		router.delete("/contacts/:id").handler(contactsHandler);
 		
-		vertx.createHttpServer().requestHandler(router::accept).listen(8080);
+		vertx.createHttpServer().requestHandler(router::accept).listen(this.config().getInteger("http.port"));
 	}
 }

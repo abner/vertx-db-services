@@ -1,14 +1,17 @@
 package io.abner.vertx.postgres.services;
 
+import io.vertx.core.VertxOptions;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.RunTestOnContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.ext.jdbc.JDBCClient;
 import io.vertx.rxjava.ext.sql.SQLClient;
 import org.junit.Before;
 import org.junit.Rule;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Scheduler;
@@ -27,14 +30,17 @@ public abstract class AbstractVertxTest {
     protected Async async;
 
     @Rule
-    public RunTestOnContext rule = new RunTestOnContext();
+    public RunTestOnContext rule = new RunTestOnContext(new VertxOptions().setMaxEventLoopExecuteTime(Long.MAX_VALUE));
 
     private Properties testProperties = new Properties();
 
     public JsonObject getDbConfig() throws Exception {
         this.loadTestProperties();
-        String jdbcUrl = String.format("jdbc:postgresql://%s:%d/%s", testProperties.getProperty("db_host"),
-                Integer.parseInt(testProperties.getProperty("db_port")), testProperties.getProperty("db_database"));
+        String jdbcUrl = String.format("jdbc:postgresql://%s:%d/%s?user=%s&password=%s", testProperties.getProperty("db_host"),
+                Integer.parseInt(testProperties.getProperty("db_port")), testProperties.getProperty("db_database"),
+                testProperties.getProperty("db_username"),
+                testProperties.getProperty("db_password")
+        		);
         JsonObject config = new JsonObject().put("url", jdbcUrl).put("driver_class", "org.postgresql.Driver")
                 .put("user", testProperties.getProperty("db_username"))
                 .put("password", testProperties.getProperty("db_password"))
